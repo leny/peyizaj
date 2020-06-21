@@ -14,43 +14,50 @@
     const draw = seed => {
         const generator = new MersenneTwister(seed);
         const {clientWidth: canvasWidth, clientHeight: canvasHeight} = canvas;
-        canvas.width=canvasWidth;
-        canvas.height=canvasHeight;
+
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
 
         location.hash = seed;
 
-        const stepMax = 2.5;
-        const stepChange = 1.0;
-        const heightMax = canvasHeight*9/10;
+        const stepMax = 0.25 + generator.random() * 2.25;
+        const stepChange = 0.75 + generator.random() * 0.5;
+        const maxHeight = canvasHeight * (0.5 + generator.random() * 0.3);
+        const minHeight = canvasHeight - maxHeight;
 
-        let height = generator.random() * heightMax;
-        let slope = generator.random() * stepChange * 2 - stepChange;
+        let height = generator.random() * maxHeight,
+            slope = generator.random() * stepChange * 2 - stepChange;
 
-        ctx.clearRect(0,0,canvasWidth,canvasHeight);
-        ctx.strokeWidth = 1;
-        ctx.strokeStyle = "#000000";
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        ctx.fillStyle = "skyblue";
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        ctx.fillStyle = "darkgreen";
+        ctx.moveTo(0, canvasHeight);
         ctx.beginPath();
 
-        Array.from(new Array(canvasWidth).keys()).forEach(x => {
+        Array.from(new Array(canvasWidth + 1).keys()).forEach(x => {
             height += slope;
             slope += generator.random() * stepChange * 2 - stepChange;
 
             slope = Math.max(-stepMax, slope);
             slope = Math.min(stepMax, slope);
 
-            if (height > heightMax) {
-                height = heightMax;
+            if (height > maxHeight) {
+                height = maxHeight;
                 slope *= -1;
             }
-            if (height < 0) {
-                height = 0;
+            if (height < minHeight) {
+                height = minHeight;
                 slope *= -1;
             }
 
-            ctx.moveTo(x, canvasHeight);
             ctx.lineTo(x, height);
-            ctx.stroke();
         });
+
+        ctx.lineTo(canvasWidth, canvasHeight);
+        ctx.lineTo(0, canvasHeight);
+        ctx.closePath();
+        ctx.fill();
     };
 
     const init = () => {
@@ -82,7 +89,6 @@
                 ),
             );
     };
-
 
     window.addEventListener("DOMContentLoaded", init);
 })();
