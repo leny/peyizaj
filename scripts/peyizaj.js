@@ -14,6 +14,8 @@
     const draw = seed => {
         const generator = new MersenneTwister(seed);
         const {clientWidth: canvasWidth, clientHeight: canvasHeight} = canvas;
+        canvas.width=canvasWidth;
+        canvas.height=canvasHeight;
 
         location.hash = seed;
 
